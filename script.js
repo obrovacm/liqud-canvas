@@ -27,7 +27,7 @@ class Button {
     this.baseX = x;
   }
   update() {
-    let directionX = 3.3;
+    let directionX = 3;
     if (
       mouse.x < this.x + this.width &&
       mouse.x > this.x &&
@@ -36,10 +36,11 @@ class Button {
       this.x > this.baseX - 50
     ) {
       this.x -= directionX;
-      this.width += directionX;
-    } else if (this.x < this.baseX && this.width > 200) {
+      // this.width += directionX;
+    } else if (this.x < this.baseX) {
+    // } else if (this.x < this.baseX && this.width > 200) {
       this.x += directionX;
-      this.width -= directionX;
+      // this.width -= directionX;
     }
   }
   draw() {
@@ -78,8 +79,22 @@ class Particle {
     this.y = y;
     this.size = size;
     this.weight = weight;
+    this.flowRight = false;
   }
   update() {
+    // collision detection particle/mouse
+    if(
+      this.x > mouse.x - 50 &&
+      this.x < mouse.x + 50 &&
+      this.y > mouse.y - 5 &&
+      this.y < mouse.y + 5
+    ){
+      this.x -= this.weight;
+      this.y += this.weight;
+      this.flowRight = true;
+    }
+
+    // collision detection particle/button
     for (let i = 0; i < buttons.length; i++) {
       const btn = buttons[i];
       if (
@@ -89,7 +104,11 @@ class Particle {
         this.y > btn.y
       ) {
         this.weight = 0;
-        this.x -= 4;
+        if(!this.flowRight){
+          this.x -= 4;
+        }else{
+          this.x += 4;
+        }
       } else {
         this.weight += 0.03;
       }
@@ -98,6 +117,7 @@ class Particle {
       this.y = 0 - this.size;
       this.x = Math.random() * 60 + 200;
       this.weight = Math.random() * 0.5 + 1;
+      this.flowRight = false;
     }
     this.y += this.weight;
   }
